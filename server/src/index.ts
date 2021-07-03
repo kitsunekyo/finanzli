@@ -19,7 +19,7 @@ app.use(cors());
 
 app.use("/expense", expenseRouter);
 
-app.post("/s3", async function (req, res) {
+app.post("/upload", async function (req, res) {
     try {
         const name = req.body.name;
         const type = req.body.type;
