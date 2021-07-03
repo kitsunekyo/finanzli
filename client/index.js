@@ -1,10 +1,13 @@
-const uploadForm = document.getElementById("uploadForm");
-
+const uploadForm = document.getElementById("uploadForm"); // not really necessary but I prefer getting/setting it explicitly
+const spinnerEl = document.getElementById("spinner");
+const imageEl = document.getElementById("image"); // not really necessary but I prefer getting/setting it explicitly
 /**
  * request presigned post url
  */
 uploadForm.addEventListener("submit", async function (event) {
     event.preventDefault();
+    uploadForm.querySelector("input[type=submit]").setAttribute("disabled", true);
+    spinnerEl.style.setProperty("display", "block");
 
     const file = event.target.elements.file.files[0];
     if (!file) {
@@ -13,9 +16,12 @@ uploadForm.addEventListener("submit", async function (event) {
     }
 
     const presignedPost = await requestPresignedPost(file);
-    const response = await uploadFile(file, presignedPost);
+    const uploadedFileUrl = await uploadFile(file, presignedPost);
 
-    console.log(response);
+    spinnerEl.setAttribute("display", "none");
+    imageEl.setAttribute("src", uploadedFileUrl);
+    spinnerEl.style.removeProperty("display");
+    uploadForm.querySelector("input[type=submit]").removeAttribute("disabled");
 });
 
 /**
@@ -42,7 +48,7 @@ async function requestPresignedPost(file) {
  * upload file with presigned post url
  * @param {file} file
  * @param {object} presignedPost
- * @returns {Promise} s3 upload response
+ * @returns {Promise<string>} decoded URI to uploaded file
  */
 async function uploadFile(file, presignedPost) {
     const formData = new FormData();
@@ -57,5 +63,6 @@ async function uploadFile(file, presignedPost) {
         body: formData,
     });
 
-    return res.json();
+    const location = res.headers.get("Location");
+    return decodeURIComponent(location);
 }

@@ -41,7 +41,7 @@ app.post("/upload", async function (req, res) {
 async function generateUploadUrl({ name, type, size }: { name: string; type: string; size: number }) {
     return await createPresignedPost(s3Client, {
         Bucket: "finanzli",
-        Key: name,
+        Key: `public/${name}`,
         Expires: 600,
         Conditions: [["eq", "$Content-Type", type]],
     });
