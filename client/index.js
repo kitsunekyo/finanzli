@@ -25,18 +25,17 @@ uploadForm.addEventListener("submit", async function (event) {
 });
 
 /**
- * @param {string} fileName
+ * @param {file} file
  * @returns {Promise} presignedPostData
  */
 async function requestPresignedPost(file) {
-    const { name, size, type } = file;
+    const { size, type } = file;
     const res = await window.fetch("http://localhost:3000/upload", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
         },
         body: JSON.stringify({
-            name,
             type,
             size,
         }),
